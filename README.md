@@ -1,36 +1,57 @@
-# SukimaNews (EchoNews Japan v2)
+# SukimaNews
 
-React + Vite 前端，Express API 后端，部署在 Google Cloud Run。  
-正式持久化方案：
-- 用户/briefing/统计数据：Firestore
-- 音频文件：Cloud Storage
+AI 駆動の日本語音声ニュースアプリ。NHK RSS からニュースを取得し、Gemini で原稿を生成、Google Cloud TTS で音声合成します。
 
-## 架构说明
-- 运行平台：Cloud Run（满足黑客松“Google Cloud 应用执行产品”要求）
-- 数据持久化：Firestore Native
-- 音频持久化：Cloud Storage Bucket
-- 密钥管理：Secret Manager
+## 技術スタック
 
-## 关键环境变量
-- `SESSION_SECRET`：登录 token 签名密钥（必须是稳定且长期不变的值）
-- `GEMINI_API_KEY`
-- `GOOGLE_CLOUD_TTS_API_KEY`
-- `BUCKET_NAME`：例如 `sukimanews-audio-<PROJECT_ID>`
-- `NODE_ENV=production`
-- 可选：`USE_FIRESTORE=false`（仅本地调试时关闭 Firestore）
+- **フロントエンド**: React 18 + Vite 6 + Tailwind CSS
+- **バックエンド**: Express（Node.js）
+- **デプロイ**: Google Cloud Run
+- **データ永続化（本番）**: Firestore / Cloud Storage
+- **データ永続化（ローカル）**: `server/data/db.json` / `server/audio/`
 
-## 本地开发
+## アーキテクチャ
+
+- **実行環境**: Cloud Run（Google Cloud アプリケーション実行基盤）
+- **データ**: Firestore Native（ユーザー・ブリーフィング・利用統計）
+- **音声ファイル**: Cloud Storage Bucket
+- **シークレット**: Secret Manager
+
+## 環境変数
+
+| 変数名 | 必須 | 説明 |
+|--------|------|------|
+| `GEMINI_API_KEY` | ✓ | Gemini API キー（原稿生成） |
+| `GOOGLE_CLOUD_TTS_API_KEY` | ✓ | Google Cloud TTS API キー（音声合成） |
+| `SESSION_SECRET` | 本番 | ログイントークン署名用（長期固定値） |
+| `BUCKET_NAME` | 本番 | 音声保存用 Cloud Storage バケット名 |
+| `USE_FIRESTORE` | - | `false` でローカル db.json にフォールバック |
+| `GOOGLE_CLOUD_PROJECT` | 本番 | GCP プロジェクト ID |
+| `NODE_ENV` | 本番 | `production` |
+
+## ローカル開発
+
 ```bash
 npm install
 npm run dev
 ```
 
-默认：
-- 前端：`http://localhost:5173`
-- 后端：`http://localhost:3001`
+- フロントエンド: http://localhost:5173
+- バックエンド API: http://localhost:3001
 
-## GCP 一次性初始化
-1. 启用 API
+`.env` をプロジェクトルートに作成し、以下を設定してください：
+
+```
+GEMINI_API_KEY=your_gemini_api_key
+GOOGLE_CLOUD_TTS_API_KEY=your_google_cloud_tts_api_key
+```
+
+ローカルでは `server/data/db.json` と `server/audio/` にデータが保存されます。
+
+## GCP 初期設定（初回のみ）
+
+### 1. API 有効化
+
 ```bash
 gcloud services enable \
   run.googleapis.com \
@@ -42,24 +63,28 @@ gcloud services enable \
   iam.googleapis.com
 ```
 
-2. 创建 Firestore（Native）
+### 2. Firestore 作成（Native）
+
 ```bash
 gcloud firestore databases create --location=asia-northeast1 --type=firestore-native
 ```
 
-3. 创建音频 Bucket
+### 3. 音声用 Bucket 作成
+
 ```bash
 gcloud storage buckets create gs://sukimanews-audio-<PROJECT_ID> \
   --location=asia-northeast1 \
   --uniform-bucket-level-access
 ```
 
-4. 创建 Cloud Run Service Account
+### 4. Cloud Run 用サービスアカウント作成
+
 ```bash
 gcloud iam service-accounts create sukimanews-run --display-name="SukimaNews Run SA"
 ```
 
-5. 赋权
+### 5. 権限付与
+
 ```bash
 gcloud projects add-iam-policy-binding <PROJECT_ID> \
   --member="serviceAccount:sukimanews-run@<PROJECT_ID>.iam.gserviceaccount.com" \
@@ -74,14 +99,16 @@ gcloud storage buckets add-iam-policy-binding gs://sukimanews-audio-<PROJECT_ID>
   --role="roles/storage.objectAdmin"
 ```
 
-6. 创建 Secrets
+### 6. シークレット作成
+
 ```bash
 openssl rand -base64 48 | gcloud secrets create SESSION_SECRET --data-file=- --replication-policy=automatic
 printf '%s' 'your_gemini_key' | gcloud secrets create GEMINI_API_KEY --data-file=- --replication-policy=automatic
 printf '%s' 'your_tts_key' | gcloud secrets create GOOGLE_CLOUD_TTS_API_KEY --data-file=- --replication-policy=automatic
 ```
 
-## 部署到 Cloud Run
+## Cloud Run へのデプロイ
+
 ```bash
 gcloud run deploy sukimanews \
   --source . \
@@ -92,31 +119,37 @@ gcloud run deploy sukimanews \
   --set-secrets SESSION_SECRET=SESSION_SECRET:latest,GEMINI_API_KEY=GEMINI_API_KEY:latest,GOOGLE_CLOUD_TTS_API_KEY=GOOGLE_CLOUD_TTS_API_KEY:latest
 ```
 
-## 更新后如何重新部署
-每次代码修改后只要重新执行：
+## 再デプロイ
+
+コード変更後は以下を実行：
+
 ```bash
 gcloud run deploy sukimanews --source . --region asia-northeast1
 ```
 
-如果环境变量/Secrets 有变更，重新带上 `--set-env-vars` / `--set-secrets` 参数即可。
+環境変数やシークレットを変更した場合は、`--set-env-vars` / `--set-secrets` を再度指定してください。
 
-## 到哪里查看 Firestore / Bucket
-- Firestore Console：Google Cloud Console -> Firestore -> Data
-- Cloud Storage Console：Google Cloud Console -> Cloud Storage -> Buckets -> `sukimanews-audio-...`
+## Firestore / Bucket の確認
 
-CLI：
+- **Firestore**: Google Cloud Console → Firestore → Data
+- **Cloud Storage**: Google Cloud Console → Cloud Storage → Buckets → `sukimanews-audio-...`
+
+CLI 例：
+
 ```bash
 gcloud firestore databases list
 gcloud storage ls gs://sukimanews-audio-<PROJECT_ID>
 gcloud storage ls --recursive gs://sukimanews-audio-<PROJECT_ID>
 ```
 
-## 运行时行为
-- 生成音频后，MP3 会写入 Cloud Storage，不会因登出/关浏览器丢失。
-- briefing、用户、统计数据写入 Firestore，不依赖容器本地磁盘。
-- 如果某条 briefing 的音频对象不存在，接口会返回 `audioUrl: null`，前端会显示为不可播放。
+## 本番時の動作
 
-## 调试日志
+- 音声生成後、MP3 は Cloud Storage に保存され、ログアウトやブラウザ終了後も保持されます。
+- ブリーフィング・ユーザー・利用統計は Firestore に保存され、コンテナのローカルディスクに依存しません。
+- 音声オブジェクトが存在しないブリーフィングは `audioUrl: null` となり、フロントエンドで再生不可と表示されます。
+
+## デバッグログ
+
 ```bash
 gcloud logging read \
 'resource.type="cloud_run_revision" AND resource.labels.service_name="sukimanews"' \
@@ -124,9 +157,33 @@ gcloud logging read \
 --format='table(timestamp,httpRequest.requestMethod,httpRequest.status,httpRequest.requestUrl,httpRequest.userAgent)'
 ```
 
-实时 tail：
+リアルタイム tail：
+
 ```bash
 gcloud beta logging tail 'resource.type="cloud_run_revision" AND resource.labels.service_name="sukimanews"'
 ```
 
-`SyntaxWarning: invalid escape sequence` 是 gcloud SDK 的已知 Python 警告，可忽略，不影响 tail。
+`SyntaxWarning: invalid escape sequence` は gcloud SDK の既知の Python 警告で、tail の動作には影響しません。
+
+## プロジェクト構成
+
+```
+├── src/                    # フロントエンド（React + Vite）
+│   ├── app/
+│   │   ├── components/     # 共通コンポーネント
+│   │   ├── screens/       # 画面コンポーネント
+│   │   ├── utils/         # ユーティリティ
+│   │   └── routes.ts
+│   ├── styles/
+│   └── main.tsx
+├── server/                 # バックエンド（Express）
+│   ├── index.js           # API サーバー
+│   ├── db.js              # データベース（Firestore / db.json）
+│   └── audio-storage.js   # 音声ストレージ（Cloud Storage / ローカル）
+├── Dockerfile
+└── package.json
+```
+
+## ライセンス
+
+Private
