@@ -184,6 +184,10 @@ gcloud beta logging tail 'resource.type="cloud_run_revision" AND resource.labels
 └── package.json
 ```
 
+## 本リポジトリの用途
+
+本プロジェクトは審査・評価目的で公開しています。コードの閲覧・参考は自由です。
+
 ## ライセンス
 
-Private
+MIT License
