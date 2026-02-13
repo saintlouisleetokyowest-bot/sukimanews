@@ -1,0 +1,283 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  
+  /* 🎨 Organic Fluid Design - ブルー&シアン系パステルカラー */
+  /* 背景: スカイブルー〜アイスブルーグラデーション */
+  --background: #E8F4F8;
+  --foreground: #1a3a52;
+  
+  /* カード: 半透明ガラス効果 */
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #1a3a52;
+  
+  /* ポップオーバー */
+  --popover: rgba(255, 255, 255, 0.9);
+  --popover-foreground: #1a3a52;
+  
+  /* プライマリ: ディープオーシャンブルー */
+  --primary: #2C5F7F;
+  --primary-foreground: #ffffff;
+  
+  /* セカンダリ: ソフトティール */
+  --secondary: #5B9AA8;
+  --secondary-foreground: #ffffff;
+  
+  /* ミュート: 極薄パステル */
+  --muted: rgba(203, 213, 225, 0.3);
+  --muted-foreground: #64748b;
+  
+  /* アクセント: アクアマリン */
+  --accent: #7EC8D8;
+  --accent-foreground: #ffffff;
+  
+  /* 破壊的アクション */
+  --destructive: #F4A5A8;
+  --destructive-foreground: #ffffff;
+  
+  /* ボーダー: 極薄 */
+  --border: rgba(148, 163, 184, 0.2);
+  --input: transparent;
+  --input-background: rgba(255, 255, 255, 0.5);
+  --switch-background: #cbd5e1;
+  
+  /* フォント */
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  
+  /* リ���グ */
+  --ring: #2C5F7F;
+  
+  /* チャート */
+  --chart-1: #2C5F7F;
+  --chart-2: #5B9AA8;
+  --chart-3: #7EC8D8;
+  --chart-4: #A8D8E8;
+  --chart-5: #B8E6D5;
+  
+  /* 極高角丸 - 有機的な形状用 */
+  --radius: 1.5rem;
+  
+  /* Glassmorphism効果 */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  
+  /* サイドバー */
+  --sidebar: rgba(248, 250, 252, 0.8);
+  --sidebar-foreground: #1a3a52;
+  --sidebar-primary: #2C5F7F;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(203, 213, 225, 0.3);
+  --sidebar-accent-foreground: #1a3a52;
+  --sidebar-border: rgba(148, 163, 184, 0.2);
+  --sidebar-ring: #2C5F7F;
+}
+
+.dark {
+  --background: #0f1419;
+  --foreground: #e2e8f0;
+  --card: rgba(30, 41, 59, 0.7);
+  --card-foreground: #e2e8f0;
+  --popover: rgba(30, 41, 59, 0.9);
+  --popover-foreground: #e2e8f0;
+  --primary: #7EC8D8;
+  --primary-foreground: #0f172a;
+  --secondary: #A8D8E8;
+  --secondary-foreground: #0f172a;
+  --muted: rgba(51, 65, 85, 0.3);
+  --muted-foreground: #94a3b8;
+  --accent: #B8E6D5;
+  --accent-foreground: #0f172a;
+  --destructive: #F8B5B8;
+  --destructive-foreground: #0f172a;
+  --border: rgba(126, 200, 216, 0.25);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #7EC8D8;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: #7EC8D8;
+  --chart-2: #A8D8E8;
+  --chart-3: #B8E6D5;
+  --chart-4: #C8E8F8;
+  --chart-5: #D8F6E5;
+  --sidebar: rgba(30, 41, 59, 0.8);
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #7EC8D8;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: rgba(51, 65, 85, 0.3);
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: rgba(126, 200, 216, 0.25);
+  --sidebar-ring: #7EC8D8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* 🌊 有機的な流体背景 - オーシャンブルーグラデーション */
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(168, 216, 232, 0.4) 0%, transparent 50%),
+      radial-gradient(circle at 90% 10%, rgba(126, 200, 216, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(184, 230, 213, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 30% 60%, rgba(91, 154, 168, 0.25) 0%, transparent 50%);
+    background-attachment: fixed;
+    background-size: 200% 200%;
+    animation: fluidGradient 20s ease infinite;
+    position: relative;
+  }
+  
+  /* ✨ グレイニーテクスチャオーバーレイ */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.03;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    mix-blend-mode: overlay;
+  }
+  
+  /* すべての要素を前面に */
+  body > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 呼吸するようなグラデーションアニメーション */
+  @keyframes fluidGradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(91, 154, 168, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 90% 10%, rgba(126, 200, 216, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(168, 216, 232, 0.2) 0%, transparent 60%),
+      radial-gradient(circle at 30% 60%, rgba(44, 95, 127, 0.2) 0%, transparent 50%);
+  }
+  
+  .dark body::before {
+    opacity: 0.05;
+  }
+}
+
+/* 🫧 Glassmorphism ユーティリティクラス */
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  
+  .dark .glass {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(91, 154, 168, 0.3);
+  }
+  
+  .dark .glass-strong {
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid rgba(91, 154, 168, 0.4);
+  }
+  
+  /* 🌀 有機的な丸み（Blob形状） */
+  .organic-blob {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  
+  .organic-blob-reverse {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  
+  /* 💫 微妙な浮遊感 */
+  .float-slow {
+    animation: floatSlow 6s ease-in-out infinite;
+  }
+  
+  @keyframes floatSlow {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  /* ✨ 呼吸するスケール */
+  .breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SukimaNews - AI News App" />
+    <title>SukimaNews</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var debugByQuery = params.get("debug") === "1";
+        var debugByStorage = window.localStorage.getItem("eruda") === "1";
+        if (!debugByQuery && !debugByStorage) return;
+
+        var script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/eruda";
+        script.onload = function () {
+          if (window.eruda) window.eruda.init();
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

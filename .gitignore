@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment (API keys)
+.env
+.env.local
+.env.*.local
+
+# Local API 生成的音频文件
+server/audio/
+
+# 本地数据库（含用户数据）
+server/data/
+
+# Build
+dist/
+*.local
+
+# IDE / OS
+.DS_Store
+Thumbs.db
