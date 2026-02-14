@@ -368,7 +368,7 @@ export function AdminScreen() {
           </section>
 
           <section className="grid grid-cols-1 gap-4">
-            {/* 总的 Usage Trend */}
+            {/* Usage トレンド */}
             <div className="glass-strong rounded-3xl p-6 border border-white/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -404,7 +404,7 @@ export function AdminScreen() {
           </section>
 
           <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Gemini Call Trend + Success Rate */}
+            {/* Gemini 呼び出しトレンド + 成功率 */}
             <div className="glass-strong rounded-3xl p-6 border border-white/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -448,7 +448,7 @@ export function AdminScreen() {
               </div>
             </div>
 
-            {/* TTS Call Trend + Success Rate */}
+            {/* TTS 呼び出しトレンド + 成功率 */}
             <div className="glass-strong rounded-3xl p-6 border border-white/30 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <div>

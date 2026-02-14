@@ -219,7 +219,7 @@ export function AdminUsersScreen() {
                   onClick={() => navigate(`/admin/users/${u.id}`)}
                   className="flex flex-col gap-3 px-4 py-3 glass rounded-2xl border border-white/30 cursor-pointer hover:border-primary/40 transition-colors md:grid md:grid-cols-[1fr_80px_112px_152px_24px] md:gap-4"
                 >
-                  {/* 窄屏：第一行 = 用户+API+状态；宽屏：5 列网格 */}
+                  {/* 狭幅：1行目 = ユーザー+API+状態；広幅：5列グリッド */}
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 md:contents">
                     <div className="min-w-0 flex-1">
                       <div className="font-medium text-primary truncate">{u.name || "Unnamed"}</div>

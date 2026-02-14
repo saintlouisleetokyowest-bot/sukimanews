@@ -37,13 +37,13 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
-    // Apply theme to document
+    // テーマを document に適用
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else if (theme === "light") {
       document.documentElement.classList.remove("dark");
     } else {
-      // System
+      // システム
       const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       if (isDark) {
         document.documentElement.classList.add("dark");
@@ -69,12 +69,12 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      {/* Backdrop */}
+      {/* バックドロップ */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
 
-      {/* Dialog */}
+      {/* ダイアログ */}
       <div className="relative w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl shadow-xl max-h-[90vh] overflow-auto animate-in slide-in-from-bottom duration-300">
-        {/* Header */}
+        {/* ヘッダー */}
         <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">設定</h2>
           <button
@@ -85,9 +85,9 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
           </button>
         </div>
 
-        {/* Content */}
+        {/* コンテンツ */}
         <div className="p-6 space-y-6">
-          {/* Theme Selection */}
+          {/* テーマ選択 */}
           <div>
             <h3 className="text-sm font-medium mb-3 text-muted-foreground flex items-center gap-2">
               <Sun className="w-4 h-4" />
@@ -136,7 +136,7 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             </div>
           </div>
 
-          {/* Default Voice */}
+          {/* デフォルト音声 */}
           <div>
             <h3 className="text-sm font-medium mb-3 text-muted-foreground">デフォルト音声</h3>
             <div className="flex gap-3">
@@ -167,7 +167,7 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             </div>
           </div>
 
-          {/* Default Duration */}
+          {/* デフォルト長さ */}
           <div>
             <h3 className="text-sm font-medium mb-3 text-muted-foreground">デフォルト長さ</h3>
             <div className="grid grid-cols-3 gap-3">
@@ -192,7 +192,7 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             </div>
           </div>
 
-          {/* Notifications */}
+          {/* 通知 */}
           <div>
             <h3 className="text-sm font-medium mb-3 text-muted-foreground flex items-center gap-2">
               <Bell className="w-4 h-4" />
@@ -217,7 +217,7 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             </button>
           </div>
 
-          {/* Admin Section */}
+          {/* 管理セクション */}
           {user?.isAdmin && (
             <button
               className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3"
@@ -231,10 +231,10 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
             </button>
           )}
 
-          {/* Divider */}
+          {/* 区切り線 */}
           <div className="border-t border-border"></div>
 
-          {/* About Section */}
+          {/* このアプリについて */}
           <div className="space-y-2">
             <button className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3">
               <Info className="w-5 h-5 text-primary" />
@@ -244,12 +244,24 @@ export function SettingsDialog({ onClose }: SettingsDialogProps) {
               </div>
             </button>
 
-            <button className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3">
+            <button
+              onClick={() => {
+                onClose();
+                navigate("/terms");
+              }}
+              className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3"
+            >
               <FileText className="w-5 h-5 text-primary" />
               <span className="flex-1 text-left text-sm font-medium">利用規約</span>
             </button>
 
-            <button className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3">
+            <button
+              onClick={() => {
+                onClose();
+                navigate("/privacy");
+              }}
+              className="w-full p-4 rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-200 flex items-center gap-3"
+            >
               <Shield className="w-5 h-5 text-primary" />
               <span className="flex-1 text-left text-sm font-medium">プライバシーポリシー</span>
             </button>

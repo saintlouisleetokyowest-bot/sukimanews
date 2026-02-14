@@ -6,6 +6,8 @@ import { AuthScreen } from "./screens/auth-screen";
 import { AdminScreen } from "./screens/admin-screen";
 import { AdminUsersScreen } from "./screens/admin-users-screen";
 import { AdminUserScreen } from "./screens/admin-user-screen";
+import { TermsScreen } from "./screens/terms-screen";
+import { PrivacyScreen } from "./screens/privacy-screen";
 import { RootLayout } from "./components/root-layout";
 
 export const router = createBrowserRouter([
@@ -17,6 +19,8 @@ export const router = createBrowserRouter([
       { path: "player/:briefingId", Component: PlayerScreen },
       { path: "history", Component: HistoryScreen },
       { path: "auth", Component: AuthScreen },
+      { path: "terms", Component: TermsScreen },
+      { path: "privacy", Component: PrivacyScreen },
       { path: "admin", Component: AdminScreen },
       { path: "admin/users", Component: AdminUsersScreen },
       { path: "admin/users/:userId", Component: AdminUserScreen },

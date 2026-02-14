@@ -9,7 +9,7 @@ import { FluidBackground } from "../components/fluid-background";
 import { formatJapanDate, getJapanGreeting } from "../utils/date";
 import { useAudioPlayer } from "../components/audio-player-provider";
 import { useAuth } from "../components/auth-provider";
-const API_BASE = ""; // 本地开发由 Vite 代理 /api 到后端
+const API_BASE = ""; // ローカル開発時は Vite が /api をバックエンドにプロキシ
 
 export function HomeScreen() {
   const navigate = useNavigate();
@@ -77,14 +77,14 @@ export function HomeScreen() {
         duration: selectedDuration * 60,
       });
 
-      // 本地 API（或部署到 Google Cloud 时替换为实际域名）
+      // ローカル API（Google Cloud デプロイ時は実際のドメインに置換）
       const response = await authFetch(`${API_BASE}/api/generate-briefing`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           topics: selectedTopics,
           voice: selectedVoice,
-          duration: selectedDuration * 60, // Convert minutes to seconds
+          duration: selectedDuration * 60, // 分を秒に変換
         }),
       });
 
@@ -134,13 +134,13 @@ export function HomeScreen() {
           ? `${data.error}\n詳細: ${data.details}`
           : data.error || "Failed to generate briefing";
         
-        // Check if it's an API key error
+        // API キーエラーかどうか
         if (errorMessage.includes("API key")) {
           throw new Error(
             "⚠️ APIキーが無効です\n\n" +
             "Gemini APIキーを設定してください：\n" +
             "1. https://aistudio.google.com/apikey でAPIキーを取得\n" +
-            "2. Figmaエディタの右上の設定から環境変数を設定\n\n" +
+            "2. プロジェクトルートの .env に GEMINI_API_KEY を設定\n\n" +
             "現在はデモモードで動作します（音声なし）"
           );
         }
@@ -190,12 +190,12 @@ export function HomeScreen() {
       
       let errorMessage = "エラーが発生しました";
       if (error instanceof Error) {
-        // Check if it's an API key error
+        // API キーエラーかどうか
         if (error.message.includes("APIキーが無効") || error.message.includes("API key")) {
           errorMessage = "⚠️ Gemini APIキーが必要です\n\n" +
             "1. https://aistudio.google.com/apikey でAPIキーを取得\n" +
-            "2. 项目根目录 .env 中设置 GEMINI_API_KEY\n\n" +
-            "设置后请重启本地 API 服务并重试。";
+            "2. プロジェクトルートの .env に GEMINI_API_KEY を設定\n\n" +
+            "設定後、ローカル API サーバーを再起動して再試行してください。";
         } else if (error.message.includes("Network") || error.message.includes("fetch")) {
           errorMessage = "ネットワークエラーが発生しました\n\n" +
             "インターネット接続を確認して、再度お試しください。";
@@ -229,7 +229,7 @@ export function HomeScreen() {
     }
   };
 
-  // 日本时间：年月日（星期）+ 问候语 + 对应图标
+  // 日本時間：年月日（曜日）+ 挨拶 + 対応アイコン
   const now = new Date();
   const formattedDate = formatJapanDate(now);
   const greeting = getJapanGreeting(now);
@@ -548,12 +548,12 @@ export function HomeScreen() {
         </div>
       </nav>
 
-      {/* Generating Dialog */}
+      {/* 生成ダイアログ */}
       {isGenerating && (
         <GeneratingDialog currentStep={currentStep} onCancel={() => setIsGenerating(false)} />
       )}
 
-      {/* Settings Dialog */}
+      {/* 設定ダイアログ */}
       {showSettings && (
         <SettingsDialog onClose={() => setShowSettings(false)} />
       )}

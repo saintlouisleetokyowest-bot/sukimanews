@@ -1,6 +1,6 @@
 /**
- * 本地 API 服务器 - 替代 Supabase Edge Functions
- * 使用 .env 中的 GEMINI_API_KEY、GOOGLE_CLOUD_TTS_API_KEY
+ * ローカル API サーバー（Supabase Edge Functions の代替）
+ * .env の GEMINI_API_KEY、GOOGLE_CLOUD_TTS_API_KEY を使用
  */
 
 import "dotenv/config";
@@ -16,14 +16,8 @@ import { audioStorage } from "./audio-storage.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || process.env.API_PORT || 3001;
 
-const TOPIC_RSS = {
-  headline: "https://www.nhk.or.jp/rss/news/cat0.xml",
-  international: "https://www.nhk.or.jp/rss/news/cat6.xml",
-  business: "https://www.nhk.or.jp/rss/news/cat5.xml",
-  technology: "https://www.nhk.or.jp/rss/news/cat3.xml",
-  sports: "https://www.nhk.or.jp/rss/news/cat7.xml",
-  entertainment: "https://www.nhk.or.jp/rss/news/cat2.xml",
-};
+// ウィキニュース（ja.wikinews.org）CC BY-SA - MediaWiki API で最新記事を取得
+const WIKINEWS_API_BASE = "https://ja.wikinews.org/w/api.php";
 
 const app = express();
 app.use(cors());
@@ -43,7 +37,7 @@ if (isProd && fs.existsSync(clientDist)) {
 }
 
 
-// 确保音频目录存在
+// 音声ディレクトリの存在を確保
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const SESSION_SECRET = process.env.SESSION_SECRET || "please-set-session-secret";
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
@@ -660,17 +654,36 @@ const computeCostEstimate = (referenceTs = Date.now()) => {
   };
 };
 
-// 解析 RSS XML 中的 item（简单正则，适用于 NHK RSS）
-function parseRssItems(xml) {
+/** ウィキニュース MediaWiki API から最新記事を取得 */
+async function fetchWikinewsFromApi() {
   const items = [];
-  const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
-  let m;
-  while ((m = itemRegex.exec(xml)) !== null) {
-    const block = m[1];
-    const title = /<title>([\s\S]*?)<\/title>/i.exec(block)?.[1]?.trim() || "";
-    const desc = /<description>([\s\S]*?)<\/description>/i.exec(block)?.[1]?.trim() || "";
-    const link = /<link>([\s\S]*?)<\/link>/i.exec(block)?.[1]?.trim() || "";
-    if (title) items.push({ title, description: desc, link });
+  try {
+    const rcUrl = `${WIKINEWS_API_BASE}?action=query&list=recentchanges&rcnamespace=0&rclimit=50&format=json`;
+    const rcRes = await fetch(rcUrl);
+    const rcData = await rcRes.json();
+    const changes = rcData?.query?.recentchanges || [];
+    const seen = new Set();
+    const unique = [];
+    for (const c of changes) {
+      if (!c?.title || seen.has(c.title)) continue;
+      seen.add(c.title);
+      unique.push({ title: c.title, pageid: c.pageid });
+    }
+    const toFetch = unique.slice(0, 30);
+    if (toFetch.length === 0) return items;
+    const pageids = toFetch.map((u) => u.pageid).join("|");
+    const exUrl = `${WIKINEWS_API_BASE}?action=query&pageids=${pageids}&prop=extracts&exintro=true&explaintext=true&exchars=250&format=json`;
+    const exRes = await fetch(exUrl);
+    const exData = await exRes.json();
+    const pages = exData?.query?.pages || {};
+    for (const { title, pageid } of toFetch) {
+      const p = pages[String(pageid)];
+      const extract = p?.extract?.trim() || "";
+      const link = `https://ja.wikinews.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`;
+      items.push({ title, description: extract, link });
+    }
+  } catch (e) {
+    console.warn("Wikinews API fetch failed:", e.message);
   }
   return items;
 }
@@ -805,20 +818,10 @@ function buildFallbackScript(newsItems, durationSeconds) {
 }
 
 async function fetchNewsForTopics(topics) {
-  const allNews = [];
-  for (const topic of topics) {
-    const url = TOPIC_RSS[topic];
-    if (!url) continue;
-    try {
-      const res = await fetch(url);
-      const xml = await res.text();
-      const items = parseRssItems(xml).slice(0, 15);
-      allNews.push(...items.map((n) => ({ ...n, topic })));
-    } catch (e) {
-      console.warn("RSS fetch failed for", topic, e.message);
-    }
-  }
-  return allNews;
+  const items = await fetchWikinewsFromApi();
+  if (items.length === 0) return [];
+  const validTopics = Array.isArray(topics) && topics.length > 0 ? topics : ["headline"];
+  return items.slice(0, 50).map((n, i) => ({ ...n, topic: validTopics[i % validTopics.length] }));
 }
 
 function trimScriptToTarget(script, targetChars, options = {}) {
@@ -856,7 +859,7 @@ ${sentence}` : sentence;
       continue;
     }
 
-    // If we're still below min, allow one sentence to cross max to avoid too short output.
+    // min 未満の場合は、1文だけ max を超えても許容して短すぎる出力を防ぐ
     if (!current || current.length < minLen) {
       best = next;
     }
@@ -1103,7 +1106,7 @@ async function synthesizeWithTTS(text, voice) {
     return { audioBase64: null, isDemo: true, ttsError: "GOOGLE_CLOUD_TTS_API_KEY is missing.", ttsCalls: 0, didCall: false };
   }
 
-  // ja-JP Neural2: B=FEMALE, C=MALE（官方 SSML Gender）。男声→C、女声→B
+  // ja-JP Neural2: B=女性、C=男性（SSML Gender）。男声→C、女声→B
   const voiceName = voice === "male" ? "ja-JP-Neural2-C" : "ja-JP-Neural2-B";
   const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`;
   let ttsCalls = 0;
@@ -1186,7 +1189,7 @@ async function synthesizeWithTTS(text, voice) {
   return { audioBase64: Buffer.concat(buffers).toString("base64"), isDemo: false, ttsChunks: chunks.length, ttsCalls, didCall: ttsCalls > 0 };
 }
 
-// Auth endpoints
+// 認証エンドポイント
 app.post("/api/auth/register", withAsync(async (req, res) => {
   const { name, email, password } = req.body || {};
   const trimmedName = String(name || "").trim();
@@ -1255,7 +1258,7 @@ app.post("/api/auth/login", withAsync(async (req, res) => {
 }));
 
 app.post("/api/auth/logout", requireAuth, (req, res) => {
-  // Stateless token logout: clear on client side.
+  // ステートレストークン：ログアウトはクライアント側でトークンを破棄
   res.json({ ok: true });
 });
 
@@ -1264,7 +1267,7 @@ app.get("/api/auth/me", requireAuth, (req, res) => {
   res.json({ user: toPublicUser(user) });
 });
 
-// Admin endpoints
+// 管理画面エンドポイント
 app.get("/api/admin/overview", requireAuth, requireAdmin, (req, res) => {
   ensureUsageState();
   ensureActivityState();
@@ -1501,7 +1504,7 @@ app.delete("/api/admin/users/:id", requireAuth, requireAdmin, withAsync(async (r
   res.json({ ok: true, removed: toPublicUser(removedUser) });
 }));
 
-// POST /api/generate-briefing
+// POST /api/generate-briefing（ブリーフィング生成）
 app.post("/api/generate-briefing", requireAuth, withAsync(async (req, res) => {
   let geminiAttempted = false;
   let geminiSuccess = false;
@@ -1570,7 +1573,7 @@ app.post("/api/generate-briefing", requireAuth, withAsync(async (req, res) => {
 
     const { script, isDemo: scriptDemo, debug: geminiDebug } = geminiResult;
 
-    // 密钥已配置但 Gemini 调用失败时，直接返回错误，不返回演示脚本
+    // API キーは設定済みだが Gemini 呼び出しが失敗した場合、デモスクリプトではなくエラーを返す
     if (scriptDemo && geminiDebug.error && geminiDebug.errorType !== "network") {
       if (!generateTracked) {
         await trackGenerateBriefingOutcome(userId, false);
@@ -1660,7 +1663,7 @@ app.post("/api/generate-briefing", requireAuth, withAsync(async (req, res) => {
   }
 }));
 
-// POST /api/briefings - 保存
+// POST /api/briefings（ブリーフィング保存）
 app.post("/api/briefings", requireAuth, withAsync(async (req, res) => {
   const briefing = req.body || {};
   const userId = req.user?.id;

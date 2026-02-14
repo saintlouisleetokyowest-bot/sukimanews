@@ -20,7 +20,7 @@ import { FluidBackground } from "../components/fluid-background";
 import { useAudioPlayer } from "../components/audio-player-provider";
 import { useAuth } from "../components/auth-provider";
 
-const API_BASE = ""; // 本地由 Vite 代理 /api
+const API_BASE = ""; // ローカル時は Vite が /api をプロキシ
 
 export function PlayerScreen() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export function PlayerScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const { user, authFetch, loading: authLoading } = useAuth();
 
-  // Load briefing from location state or fetch from server
+  // location state からブリーフィングを読み込むか、サーバーから取得
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -57,7 +57,7 @@ export function PlayerScreen() {
       setBriefing(location.state.briefing);
       setIsLoading(false);
     } else if (briefingId) {
-      // Fetch from server
+      // サーバーから取得
       console.log("Fetching briefing from server:", briefingId);
       authFetch(`${API_BASE}/api/briefings/${briefingId}`)
         .then((response) => {
@@ -94,7 +94,7 @@ export function PlayerScreen() {
   }, [briefing?.audioUrl, briefing?.id, briefingId, setCurrentBriefingId, setSource]);
 
 
-  // If no briefing loaded yet, show loading
+  // ブリーフィング未読み込み時はローディング表示
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

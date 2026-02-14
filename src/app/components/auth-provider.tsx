@@ -36,7 +36,7 @@ const storageSet = (key: string, value: string) => {
   try {
     localStorage.setItem(key, value);
   } catch {
-    // Ignore storage failures (private mode / quota).
+    // ストレージ失敗は無視（プライベートモード / クォータ超過）
   }
 };
 
@@ -44,7 +44,7 @@ const storageRemove = (key: string) => {
   try {
     localStorage.removeItem(key);
   } catch {
-    // Ignore storage failures (private mode / quota).
+    // ストレージ失敗は無視（プライベートモード / クォータ超過）
   }
 };
 
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         cache: "no-store",
       });
 
-      // Some Safari/proxy paths may still return 304 with empty body.
+      // Safari / プロキシ経由では 304 で空ボディが返る場合あり
       if (res.status === 304) {
         const retry = await fetch(`${API_BASE}/api/auth/me?_=${Date.now()}`, {
           headers,

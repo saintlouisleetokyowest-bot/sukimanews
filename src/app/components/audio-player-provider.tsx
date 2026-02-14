@@ -125,7 +125,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       try {
         await playPromiseRef.current;
       } catch (_) {
-        // Ignore aborted play attempts.
+        // 中断された再生試行は無視
       }
     }
     audio.pause();

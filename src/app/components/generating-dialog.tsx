@@ -22,17 +22,17 @@ export function GeneratingDialog({ currentStep, onCancel }: GeneratingDialogProp
         animate={{ opacity: 1, scale: 1 }}
         className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6"
       >
-        {/* Icon */}
+        {/* アイコン */}
         <div className="flex justify-center">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
             <Mic className="w-8 h-8 text-primary" />
           </div>
         </div>
 
-        {/* Title */}
+        {/* タイトル */}
         <h2 className="text-2xl font-semibold text-center">ニュースを生成中...</h2>
 
-        {/* Progress Bar */}
+        {/* プログレスバー */}
         <div className="space-y-2">
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
             <motion.div
@@ -44,7 +44,7 @@ export function GeneratingDialog({ currentStep, onCancel }: GeneratingDialogProp
           </div>
         </div>
 
-        {/* Steps */}
+        {/* ステップ */}
         <div className="space-y-3">
           {steps.map((step, index) => {
             const isComplete = index < currentStepIndex;
@@ -92,10 +92,10 @@ export function GeneratingDialog({ currentStep, onCancel }: GeneratingDialogProp
           })}
         </div>
 
-        {/* Time Estimate */}
+        {/* 予想時間 */}
         <p className="text-sm text-muted-foreground text-center">予想時間: 約30秒</p>
 
-        {/* Cancel Button */}
+        {/* キャンセルボタン */}
         <button
           onClick={onCancel}
           className="w-full py-3 text-primary hover:bg-primary/10 rounded-lg transition-colors font-medium"

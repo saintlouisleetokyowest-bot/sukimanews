@@ -1,24 +1,24 @@
-/** 日本时区 (Asia/Tokyo, UTC+9)，供全系统统一使用 */
+/** 日本時区 (Asia/Tokyo, UTC+9)、全システムで統一使用 */
 export const JAPAN_TIMEZONE = "Asia/Tokyo";
 
-/** 获取当前日本时间 */
+/** 現在の日本時間を取得 */
 export function nowInJapan(): Date {
   return new Date(
     new Date().toLocaleString("en-US", { timeZone: JAPAN_TIMEZONE })
   );
 }
 
-/** 将任意 Date 转为日本时间（用于显示） */
+/** 任意の Date を日本時間に変換（表示用） */
 export function toJapanTime(date: Date): Date {
   return new Date(
     date.toLocaleString("en-US", { timeZone: JAPAN_TIMEZONE })
   );
 }
 
-/** 日本时间问候语：朝 / 昼 / 夜 */
+/** 日本時間の挨拶：朝 / 昼 / 夜 */
 export type JapanGreeting = "おはようございます" | "こんにちは" | "こんばんは";
 
-/** 根据日本时间小时返回问候语 */
+/** 日本時間の時間帯に応じて挨拶を返す */
 export function getJapanGreeting(date: Date): JapanGreeting {
   const hour = parseInt(
     date.toLocaleString("en-US", { timeZone: JAPAN_TIMEZONE, hour: "numeric", hour12: false }),
@@ -29,7 +29,7 @@ export function getJapanGreeting(date: Date): JapanGreeting {
   return "こんばんは"; // 夜 18:00-4:59
 }
 
-/** 格式化日本时间：年月日（星期） */
+/** 日本時間をフォーマット：年月日（曜日） */
 export function formatJapanDate(date: Date): string {
   const formatter = new Intl.DateTimeFormat("ja-JP", {
     timeZone: JAPAN_TIMEZONE,
@@ -46,7 +46,7 @@ export function formatJapanDate(date: Date): string {
   return `${y}年${m}月${d}日（${weekday}）`;
 }
 
-/** 年月日（星期）+ 问候语，用于首页欢迎词 */
+/** 年月日（曜日）+ 挨拶、ホームページの歓迎メッセージ用 */
 export function formatJapanDateWithGreeting(date: Date): string {
   return `${formatJapanDate(date)} ${getJapanGreeting(date)}`;
 }

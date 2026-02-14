@@ -1,6 +1,6 @@
 # SukimaNews
 
-AI 駆動の日本語音声ニュースアプリ。NHK RSS からニュースを取得し、Gemini で原稿を生成、Google Cloud TTS で音声合成します。
+AI 駆動の日本語音声ニュースアプリ。ウィキニュース（ja.wikinews.org、CC BY-SA）からニュースを取得し、Gemini で原稿を生成、Google Cloud TTS で音声合成します。
 
 ## 技術スタック
 
@@ -16,6 +16,10 @@ AI 駆動の日本語音声ニュースアプリ。NHK RSS からニュースを
 - **データ**: Firestore Native（ユーザー・ブリーフィング・利用統計）
 - **音声ファイル**: Cloud Storage Bucket
 - **シークレット**: Secret Manager
+
+## ニュースソースの利用許諾について
+
+本アプリは **ウィキニュース（ja.wikinews.org）** の記事をニュースソースとして利用しています。ウィキニュースのコンテンツは **CC BY-SA（Creative Commons 表示-継承）** で提供されており、複製・公衆送信・翻案・商用利用が許可されています。利用にあたっては出典の明示が必要です。本サービスでは利用規約内で適切にクレジットを記載しています。
 
 ## 環境変数
 
@@ -44,9 +48,11 @@ npm run dev
 ```
 GEMINI_API_KEY=your_gemini_api_key
 GOOGLE_CLOUD_TTS_API_KEY=your_google_cloud_tts_api_key
+USE_FIRESTORE=false
 ```
 
-ローカルでは `server/data/db.json` と `server/audio/` にデータが保存されます。
+- `USE_FIRESTORE=false` を指定すると、Firestore に接続せずローカルの `db.json` を使用します（GCP 認証不要で動作確認可能）。
+- ローカルでは `server/data/db.json` と `server/audio/` にデータが保存されます。
 
 ## GCP 初期設定（初回のみ）
 

@@ -22,42 +22,45 @@ export interface TopicConfig {
   rssUrl: string;
 }
 
+// ニュースソース：ウィキニュース（ja.wikinews.org）CC BY-SA
+const WIKINEWS_SOURCE = "https://ja.wikinews.org/";
+
 export const TOPICS: Record<Topic, TopicConfig> = {
   headline: {
     id: "headline",
     emoji: "📰",
     nameJa: "トップ",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat0.xml"
+    rssUrl: WIKINEWS_SOURCE
   },
   international: {
     id: "international",
     emoji: "🌍",
     nameJa: "国際",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat6.xml"
+    rssUrl: WIKINEWS_SOURCE
   },
   business: {
     id: "business",
     emoji: "💼",
     nameJa: "経済",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat5.xml"
+    rssUrl: WIKINEWS_SOURCE
   },
   technology: {
     id: "technology",
     emoji: "💻",
     nameJa: "テック",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat3.xml"
+    rssUrl: WIKINEWS_SOURCE
   },
   sports: {
     id: "sports",
     emoji: "⚽",
     nameJa: "スポーツ",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat7.xml"
+    rssUrl: WIKINEWS_SOURCE
   },
   entertainment: {
     id: "entertainment",
     emoji: "🎬",
     nameJa: "エンタメ",
-    rssUrl: "https://www.nhk.or.jp/rss/news/cat2.xml"
+    rssUrl: WIKINEWS_SOURCE
   }
 };
 
@@ -73,7 +76,7 @@ export interface Briefing {
   date: string;
   topics: Topic[];
   voice: Voice;
-  duration: number; // in seconds
+  duration: number; // 秒単位
   script: string;
   audioUrl: string | null;
   createdAt: number;
